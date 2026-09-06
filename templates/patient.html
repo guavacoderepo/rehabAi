@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block title %}{{ p.name }} · RehabAI{% endblock %}
+
+{% block content %}
+<a class="back" href="{{ url_for('patients') }}">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+    stroke-linecap="round">
+    <path d="M19 12H5M11 18l-6-6 6-6" />
+  </svg>
+  All patients</a>
+
+<div class="phead">
+  <div class="av av-lg {{ p.code | tint }}">{{ p.name | initials }}</div>
+  <div style="flex:1;min-width:230px">
+    <h1>{{ p.name }}</h1>
+    <div class="dx">{{ p.diagnosis }}</div>
+    <div class="facts">
+      <span>{{ p.code }}</span>
+      <span>{{ p.age }} years, {{ 'female' if p.sex == 'F' else 'male' }}</span>
+      <span>Admitted <b>{{ p.admitted_on | longdate }}</b></span>
+      {% if p.consultant %}<span>Under <b>{{ p.consultant }}</b></span>{% endif %}
+    </div>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('new_prediction', code=p.code) }}">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+      stroke-linecap="round">
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+    New prediction</a>
+</div>
+
+{% if latest %}
+<div class="tiles">
+  <div class="tile hero">
+    <div class="lbl">Chance of walking</div>
+    <div class="v num">{{ '%.1f' % latest.walk_prob }}<small>%</small></div>
+    <div class="foot">At discharge</div>
+  </div>
+
+  <div class="tile">
+    <div class="lbl">WPI score</div>
+    <div class="v num">{{ latest.wpi_adj }}<small>/{{ adj_max }}</small></div>
+    <div class="foot">
+      <span style="color:var(--{{ 'good' if delta >= 0 else 'bad' }});font-weight:600">
+        {{ delta | signed }}</span> since admission
+    </div>
+  </div>
+
+  <div class="tile">
+    <div class="lbl">Risk score</div>
+    <div class="v num" style="color:var(--{{ risk_var(latest.risk_score) }})">
+      {{ '%.1f' % latest.risk_score }}<small>%</small>
+    </div>
+    <div class="foot">
+      <span class="pill {{ risk_class(latest.risk_score) }}">
+        <span class="dot"></span>{{ risk_band(latest.risk_score) }} risk
+      </span>
+    </div>
+  </div>
+
+  <div class="tile">
+    <div class="lbl">Assessments</div>
+    <div class="v num">{{ history | length }}</div>
+    <div class="foot">Last one {{ latest.assessed_on | ago }}</div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-head">
+    <h2>{{ p.name.split()[0] }}'s progress</h2>
+    <div class="spacer"></div>
+
+    <div class="seg" id="metricSeg">
+      <button type="button" class="on" data-metric="wpi_adj">WPI</button>
+      <button type="button" data-metric="walk">Walking</button>
+      <button type="button" data-metric="risk">Risk</button>
+    </div>
+  </div>
+
+  <p class="hint" data-hint="wpi_adj">
+    Higher scores indicate improvement.
+  </p>
+
+  <p class="hint hide" data-hint="walk">
+    Model output at each assessment.
+  </p>
+
+  <p class="hint hide" data-hint="risk">
+    Model output at each assessment.
+  </p>
+
+  <div class="chartbox" id="chartbox" data-chart='[
+    {%- for c in chart -%}
+      {"wpi_adj": {{ c.wpi_adj }},
+       "walk": {{ c.walk }},
+       "risk": {{ c.risk }},
+       "label": "{{ c.date | shortdate }}",
+       "long": "{{ c.date | longdate }}"}
+      {%- if not loop.last -%},{%- endif -%}
+    {%- endfor -%}]'></div>
+</div>
+
+<div class="panel-head" style="margin:28px 0 16px">
+  <h2>Prediction history</h2>
+  <span class="pill p-soft">{{ history | length }} records</span>
+</div>
+
+<div class="tl">
+  {% for e in entries %}
+  {% set a = e.row %}
+
+  <div class="entry {% if e.is_latest %}first open{% endif %}">
+    <div class="ecard">
+
+      <button type="button" class="ehead">
+        <div class="ed">
+          <b>{{ a.assessed_on | shortdate }}</b>
+          <span>
+            {% if e.is_latest %}most recent{% else %}assessment {{ e.index }}{% endif %}
+          </span>
+        </div>
+
+        <div class="emet">
+          <div>
+            <span>Walking</span>
+            <b class="num">{{ '%.1f' % a.walk_prob }}%</b>
+          </div>
+
+          <div>
+            <span>WPI</span>
+            <b class="num">{{ a.wpi_adj }}</b>
+          </div>
+
+          <div>
+            <span>Risk</span>
+            <b class="num" style="color:var(--{{ risk_var(a.risk_score) }})">
+              {{ '%.1f' % a.risk_score }}%
+            </b>
+          </div>
+        </div>
+
+        <span class="pill {{ risk_class(a.risk_score) }}">
+          <span class="dot"></span>{{ risk_band(a.risk_score) }}
+        </span>
+
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.2" stroke-linecap="round">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+
+      <div class="ebody">
+        <div class="quote">
+          <h4>What this means</h4>
+          <p class="lead">{{ e.text.lead }}</p>
+          <p>{{ e.text.body }}</p>
+          <ul>{% for r in e.text.recs %}<li>{{ r }}</li>{% endfor %}</ul>
+        </div>
+
+        <div class="lbl-sm">Strengths and areas to monitor</div>
+
+        <div class="bars">
+          {% for d in domains %}
+          <div class="bar">
+            <span>{{ d.name }}</span>
+            <span class="tr">
+              <i style="width:{{ e.text.domains[d.id] }}%"></i>
+            </span>
+            <span class="pc">{{ e.text.domains[d.id] }}%</span>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div style="margin-top:14px">
+          <a class="btn btn-ghost" style="padding:8px 16px;font-size:13.5px"
+            href="{{ url_for('assessment', code=p.code, assessment_id=a.id) }}">
+            Open full result
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="panel">
+  <div class="empty-state">
+    <h3>No predictions yet</h3>
+    <p>Score the 28 admission items to get {{ p.name.split()[0] }}'s first prediction.</p>
+    <a class="btn btn-primary" style="margin-top:18px" href="{{ url_for('new_prediction', code=p.code) }}">
+      Start the first assessment
+    </a>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

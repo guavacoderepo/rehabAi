@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Sign in · RehabAI{% endblock %}
+
+{% block body %}
+<div id="login" style="display:grid">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div>
+    <form class="login-card" method="post" action="{{ url_for('login') }}">
+      <svg class="login-curve" width="74" height="44" viewBox="0 0 74 44" fill="none" aria-hidden="true">
+        <path d="M3 40 C 16 38, 22 25, 33 22 S 52 12, 71 4"
+              stroke="var(--pink-mid)" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="33" cy="22" r="3.4" fill="var(--pink-mid)"/>
+        <circle cx="71" cy="4" r="3.8" fill="var(--pink)"/>
+      </svg>
+
+      <div class="wordmark">{{ wordmark() }}</div>
+
+      <h1>Welcome <em>back</em></h1>
+      <p class="lede">Sign in to see how your patients are progressing today.</p>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <div class="field">
+        <label for="username">Username</label>
+        <input class="input" id="username" name="username" placeholder="a.demo"
+               value="a.demo" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="email">Email address</label>
+        <input class="input" id="email" name="email" type="email" placeholder="name@ntu.ac.uk"
+               value="a.demo@ntu.ac.uk" autocomplete="email" required>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;margin-top:10px" type="submit">
+        Sign in
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+
+      <p class="login-foot">RehadAI supports your clinical judgement — it never replaces it.
+        Every prediction is recorded against your name in the patient's notes.</p>
+    </form>
+
+    <div class="trust">
+      <span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M12 3l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V6z"/>
+        </svg> Trained on UK ROC</span>
+      <span>28 admission items</span>
+      <span>Model AUC 0.87</span>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Patients · RehabAI{% endblock %}
+
+{% block content %}
+<div class="hello">
+  <div class="eyebrow">{{ today_long }}</div>
+  <h1>{{ greeting }}, <em>{{ g.username }}</em></h1>
+  <p>You have {{ total }} patients under your care.{% if needs_review %}
+    <b style="color:var(--bad)">{{ needs_review }} could do with a review today.</b>{% endif %}</p>
+</div>
+
+<form class="toolbar" method="get" action="{{ url_for('patients') }}">
+  <div class="search">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="7" />
+      <path d="M20 20l-3.5-3.5" />
+    </svg>
+
+    <input class="input" name="q" value="{{ q }}" placeholder="Search by name, ID or diagnosis" autocomplete="off">
+  </div>
+</form>
+
+{% if people %}
+<div class="plist">
+  {% for item in people %}
+    {% set p = item.row %}
+    {% set a = item.latest %}
+    <a class="prow" href="{{ url_for('patient', code=p.code) }}">
+      <div class="who-cell">
+        <div class="av av-md {{ p.code | tint }}">{{ p.name | initials }}</div>
+        <div style="min-width:0">
+          <h3>{{ p.name }}</h3>
+          <div class="sub">{{ p.code }} · {{ p.age }}{{ p.sex }}</div>
+          <div class="dx">{{ p.diagnosis }}</div>
+        </div>
+      </div>
+
+      <div class="cell walk">
+        <div class="big num">{{ a.walk_prob | round(0) | int }}<span
+          style="font-size:18px;color:var(--ink-3)">%</span></div>
+        <div class="lbl">chance of walking</div>
+      </div>
+
+      <div class="cell risk">
+        <span class="pill {{ risk_class(a.risk_score) }}"><span class="dot"></span>
+          {{ a.risk_score | round(0) | int }}% {{ risk_band(a.risk_score) }} risk</span>
+        <span class="lbl">Last seen {{ a.assessed_on | ago }}</span>
+      </div>
+
+      <svg class="chev" width="19" height="19" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <path d="M9 6l6 6-6 6"/>
+      </svg>
+    </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="panel">
+  <div class="empty-state">
+    <h3>Nobody matches that</h3>
+    <p>Try a different name, or switch back to Everyone.</p>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
