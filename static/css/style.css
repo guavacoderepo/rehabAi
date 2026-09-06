@@ -900,18 +900,17 @@ h4 {
 
 /* Main walking result */
 
+
 .tile.hero {
   background: var(--pink);
   border-color: var(--pink);
-
   color: #ffffff;
-
-  box-shadow: none;
 }
 
 .tile.hero .lbl,
 .tile.hero .foot {
   color: rgba(255, 255, 255, .82);
+  background: rgba(171, 121, 121, 0.08);
 }
 
 .tile.hero .v small {

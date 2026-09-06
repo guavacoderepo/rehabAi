@@ -1,0 +1,454 @@
+{
+  "fimfam_transfer_bed_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2,
+      5,
+      Infinity
+    ],
+    "labels": [
+      3,
+      2,
+      1
+    ],
+    "source": "FIM/FAM clinical 1-2 / 3-5 / 6-7"
+  },
+  "fimfam_transfer_toilet_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2,
+      5,
+      Infinity
+    ],
+    "labels": [
+      3,
+      2,
+      1
+    ],
+    "source": "FIM/FAM clinical 1-2 / 3-5 / 6-7"
+  },
+  "fimfam_transfer_bath_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2,
+      5,
+      Infinity
+    ],
+    "labels": [
+      3,
+      2,
+      1
+    ],
+    "source": "FIM/FAM clinical 1-2 / 3-5 / 6-7"
+  },
+  "fimfam_transfer_car_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2,
+      5,
+      Infinity
+    ],
+    "labels": [
+      3,
+      2,
+      1
+    ],
+    "source": "FIM/FAM clinical 1-2 / 3-5 / 6-7"
+  },
+  "npds_mobility_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      3.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "source": "Original values"
+  },
+  "fimfam_dress_upper_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2,
+      5,
+      Infinity
+    ],
+    "labels": [
+      3,
+      2,
+      1
+    ],
+    "source": "FIM/FAM clinical 1-2 / 3-5 / 6-7"
+  },
+  "fimfam_dress_lower_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2,
+      5,
+      Infinity
+    ],
+    "labels": [
+      3,
+      2,
+      1
+    ],
+    "source": "FIM/FAM clinical 1-2 / 3-5 / 6-7"
+  },
+  "fimfam_bathing_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2,
+      5,
+      Infinity
+    ],
+    "labels": [
+      3,
+      2,
+      1
+    ],
+    "source": "FIM/FAM clinical 1-2 / 3-5 / 6-7"
+  },
+  "fimfam_bladder_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2,
+      5,
+      Infinity
+    ],
+    "labels": [
+      3,
+      2,
+      1
+    ],
+    "source": "FIM/FAM clinical 1-2 / 3-5 / 6-7"
+  },
+  "fimfam_bowel_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2,
+      5,
+      Infinity
+    ],
+    "labels": [
+      3,
+      2,
+      1
+    ],
+    "source": "FIM/FAM clinical 1-2 / 3-5 / 6-7"
+  },
+  "fimfam_toileting_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2,
+      5,
+      Infinity
+    ],
+    "labels": [
+      3,
+      2,
+      1
+    ],
+    "source": "FIM/FAM clinical 1-2 / 3-5 / 6-7"
+  },
+  "npds_bathing_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      3.5,
+      4.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "source": "Original values"
+  },
+  "npds_skin_pressure_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      3.5,
+      4.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "source": "Original values"
+  },
+  "npds_pressure_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "5"
+    ],
+    "source": "Original values"
+  },
+  "fimfam_speech_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2,
+      5,
+      Infinity
+    ],
+    "labels": [
+      3,
+      2,
+      1
+    ],
+    "source": "FIM/FAM clinical 1-2 / 3-5 / 6-7"
+  },
+  "fimfam_writing_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2,
+      5,
+      Infinity
+    ],
+    "labels": [
+      3,
+      2,
+      1
+    ],
+    "source": "FIM/FAM clinical 1-2 / 3-5 / 6-7"
+  },
+  "nis_cognitive_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "source": "Original values"
+  },
+  "nis_perceptual_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "source": "Original values"
+  },
+  "npds_safety_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "source": "Original values"
+  },
+  "npds_specialing_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      2.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "5"
+    ],
+    "source": "Original values"
+  },
+  "nis_fatigue_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "source": "Original values"
+  },
+  "nis_motor_lower_left_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "source": "Original values"
+  },
+  "nis_motor_lower_right_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "source": "Original values"
+  },
+  "nis_motor_trunk_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2"
+    ],
+    "source": "Original values"
+  },
+  "nis_motor_upper_left_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "source": "Original values"
+  },
+  "nis_motor_upper_right_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "source": "Original values"
+  },
+  "nis_sensation_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "source": "Original values"
+  },
+  "nis_tone_adm": {
+    "type": "numeric_binned",
+    "edges": [
+      -Infinity,
+      0.5,
+      1.5,
+      2.5,
+      Infinity
+    ],
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "source": "Original values"
+  }
+}

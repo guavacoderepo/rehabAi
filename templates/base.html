@@ -12,11 +12,8 @@
 <body>
 
 {% macro wordmark() %}
-  <div class="mark">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
-         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 17.5 L8.5 12 L13 15 L21 6"/>
-    </svg>
+  <div class="mark" style="background:transparent;">
+    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="RehabAI" style="width:30px;height:30px;object-fit:contain;">
   </div>
   <div class="wm">Rehab<i>AI</i></div>
 {% endmacro %}

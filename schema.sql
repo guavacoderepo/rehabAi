@@ -4,18 +4,7 @@
 
 DROP TABLE IF EXISTS assessments;
 DROP TABLE IF EXISTS patients;
-DROP TABLE IF EXISTS users;
 
--- ---------------------------------------------------------------------------
--- Clinicians. The prototype signs in with username + email only; add a
--- password_hash column and werkzeug.security before any real deployment.
--- ---------------------------------------------------------------------------
-CREATE TABLE users (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    username    TEXT NOT NULL UNIQUE,
-    email       TEXT NOT NULL,
-    created_at  TEXT NOT NULL DEFAULT (datetime('now'))
-);
 
 -- ---------------------------------------------------------------------------
 -- Patients
@@ -28,7 +17,6 @@ CREATE TABLE patients (
     sex         TEXT NOT NULL CHECK(sex IN ('F','M','X')),
     diagnosis   TEXT NOT NULL,
     admitted_on TEXT NOT NULL,                 -- ISO date
-    consultant  TEXT,
     created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -79,8 +67,7 @@ CREATE TABLE assessments (
     nis_tone_adm                     INTEGER NOT NULL CHECK(nis_tone_adm BETWEEN 0 AND 4),
 
     -- computed outputs -------------------------------------------------------
-    wpi_raw        INTEGER NOT NULL,           -- straight sum of all 28 items
-    wpi_adj        INTEGER NOT NULL,           -- NPDS/NIS reverse-coded
+    wpi        INTEGER NOT NULL,           -- straight sum of all 28 items
     walk_prob      REAL NOT NULL,              -- % chance of walking
     risk_score     REAL NOT NULL,              -- % risk of poor outcome
     interpretation TEXT NOT NULL               -- JSON: lead, body, recs, domains

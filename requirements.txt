@@ -1,1 +1,4 @@
 Flask>=3.0
+joblib
+pandas
+scikit-learn

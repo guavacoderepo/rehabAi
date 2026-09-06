@@ -24,9 +24,8 @@ from flask import (Flask, flash, g, redirect, render_template, request,
                    session, url_for)
 
 import db as database
-from model import (ADJ_WPI_MAX, DOMAIN_VIEW, DOMAINS, ITEM_KEYS, RAW_WPI_MAX,
-                   SCALES, adjusted_wpi, interpret, predict, raw_wpi,
-                   risk_band, risk_class, risk_var)
+from model import (DOMAIN_VIEW, DOMAINS, ITEM_KEYS, 
+                   interpret, predict, risk_class, risk_var, wpi_barrier_band)
 
 app = Flask(__name__)
 app.config.from_mapping(
@@ -109,12 +108,12 @@ def patients():
         people.append({
             "row": r,
             "latest": latest,
-            "delta": latest["wpi_adj"] - first["wpi_adj"],
-            "trend": [h["wpi_adj"] for h in history],
+            "delta": latest["wpi"] - first["wpi"],
+            "trend": [h["wpi"] for h in history],
             "count": len(history),
         })
 
-    needs_review = sum(1 for p in people if risk_band(p["latest"]["risk_score"]) == "high")
+    needs_review = sum(1 for p in people if wpi_barrier_band(p["latest"]["risk_score"]) == "Higher barrier burden")
 
     if q:
         ql = q.lower()
@@ -122,7 +121,7 @@ def patients():
                   if ql in (p["row"]["name"] + p["row"]["code"] +
                             p["row"]["diagnosis"]).lower()]
     if flt == "high":
-        people = [p for p in people if risk_band(p["latest"]["risk_score"]) == "high"]
+        people = [p for p in people if wpi_barrier_band(p["latest"]["risk_score"]) == "Higher barrier burden"]
     elif flt == "improving":
         people = [p for p in people if p["delta"] > 0]
 
@@ -169,22 +168,21 @@ def patient(code):
 
     chart = [{
         "date": a["assessed_on"],
-        "wpi_adj": a["wpi_adj"],
-        "wpi_raw": a["wpi_raw"],
+        "wpi": a["wpi"],
         "walk": a["walk_prob"],
         "risk": a["risk_score"],
     } for a in history]
 
     latest = history[-1] if history else None
     delta = (
-        latest["wpi_adj"] - history[0]["wpi_adj"]
+        latest["wpi"] - history[0]["wpi"]
         if latest is not None and history and history[0] is not None
         else 0
     )
 
     return render_template(
         "patient.html", p=p, history=history, entries=entries, chart=chart,
-        latest=latest, delta=delta, domains=DOMAINS, adj_max=ADJ_WPI_MAX,
+        latest=latest, delta=delta, domains=DOMAINS
     )
 
 
@@ -212,21 +210,23 @@ def new_prediction(code):
             flash(f"{len(errors)} of 28 items still need a score.")
             return render_template(
                 "predict.html", p=p, domains=DOMAIN_VIEW, values=values,
-                assessed_on=assessed_on, adj_max=ADJ_WPI_MAX,
+                assessed_on=assessed_on,
                 previous=history[-1] if history else None,
             )
 
         pred = predict(values)
-        text = interpret(pred, history[-1] if history else None, p["name"])
+        previous = dict(history[-1]) if history else None
+        text = interpret(pred, previous, p["name"])
 
         conn = database.get_db()
-        columns = ["patient_id", "assessed_on", "clinician"] + ITEM_KEYS + [
-            "wpi_raw", "wpi_adj", "walk_prob", "risk_score", "interpretation"]
-        params = [p["id"], assessed_on, g.username] + \
-                 [values[k] for k in ITEM_KEYS] + [
-            pred["wpi_raw"], pred["wpi_adj"], pred["walk_prob"],
+        columns = ["patient_id", "assessed_on"] + ITEM_KEYS + [
+            "wpi", "walk_prob", "risk_score", "interpretation"]
+        params = [p["id"], assessed_on] + \
+                [values[k] for k in ITEM_KEYS] + [
+            pred["wpi"],
+            pred["walk_prob"],
             pred["risk_score"],
-            json.dumps({**text, "domains": pred["domains"]}),
+            json.dumps({**text, "domains": pred.get("domains", {})}),
         ]
         cur = conn.execute(
             f"INSERT INTO assessments ({', '.join(columns)}) "
@@ -239,11 +239,14 @@ def new_prediction(code):
     # GET — optionally pre-fill from the last assessment
     values = {}
     if request.args.get("prefill") and history:
-        values = {k: history[-1][k] for k in ITEM_KEYS}
+        last = history[-1]
+        # Convert SQLite Row to dict
+        for key in ITEM_KEYS:
+            values[key] = last[key]
 
     return render_template(
         "predict.html", p=p, domains=DOMAIN_VIEW, values=values,
-        assessed_on=date.today().isoformat(), adj_max=ADJ_WPI_MAX,
+        assessed_on=date.today().isoformat(),
         previous=history[-1] if history else None,
     )
 
@@ -269,7 +272,7 @@ def assessment(code, assessment_id):
 
     return render_template(
         "result.html", p=p, a=a, text=json.loads(a["interpretation"]),
-        previous=previous, domains=DOMAINS, adj_max=ADJ_WPI_MAX,
+        previous=previous, domains=DOMAINS,
     )
 
 
@@ -278,7 +281,12 @@ def assessment(code, assessment_id):
 # ---------------------------------------------------------------------------
 @app.template_filter("longdate")
 def longdate(iso):
-    return datetime.fromisoformat(str(iso)[:10]).strftime("%-d %B %Y")
+    import platform
+    date_obj = datetime.fromisoformat(str(iso)[:10])
+    if platform.system() == "Windows":
+        return date_obj.strftime("%#d %B %Y")
+    else:
+        return date_obj.strftime("%-d %B %Y")
 
 
 @app.template_filter("shortdate")
@@ -317,16 +325,23 @@ def signed(n):
 
 @app.context_processor
 def inject_helpers():
+    import platform
+    now = datetime.now()
+    
+    # Cross-platform date formatting
+    if platform.system() == "Windows":
+        today_long = now.strftime("%A, %#d %B")
+    else:
+        today_long = now.strftime("%A, %-d %B")
+    
     return {
-        "risk_band": risk_band,
+        "risk_band": wpi_barrier_band,
         "risk_class": risk_class,
         "risk_var": risk_var,
-        "greeting": ("Good morning" if datetime.now().hour < 12
-                     else "Good afternoon" if datetime.now().hour < 18
+        "greeting": ("Good morning" if now.hour < 12
+                     else "Good afternoon" if now.hour < 18
                      else "Good evening"),
-        "today_long": datetime.now().strftime("%A, %-d %B"),
-        "adj_wpi_max": ADJ_WPI_MAX,
-        "raw_wpi_max": RAW_WPI_MAX,
+        "today_long": today_long,
     }
 
 

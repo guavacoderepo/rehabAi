@@ -13,7 +13,7 @@
 <div class="wiz-head">
   <span class="lbl-sm">Prediction for {{ p.name }} · {{ p.code }}</span>
   <h1 style="margin-top:8px">Here's what the model expects</h1>
-  <p>Scored on {{ a.assessed_on | longdate }}{% if a.clinician %} by {{ a.clinician }}{% endif %}.
+  <p>Scored on {{ a.assessed_on | longdate }}.
     Saved to {{ first }}'s record.</p>
 </div>
 
@@ -30,14 +30,16 @@
     <div class="tiles" style="margin-bottom:16px">
       <div class="tile">
         <div class="lbl">WPI score</div>
-        <div class="v num">{{ a.wpi_adj }}<small>/{{ adj_max }}</small></div>
+        <div class="v num">{{ '%.1f' % a.wpi }}<small>points</small></div>
         <div class="foot">
           {% if previous %}
-            {% set d = a.wpi_adj - previous.wpi_adj %}
-            <span style="color:var(--{{ 'good' if d >= 0 else 'bad' }});font-weight:600">{{ d | signed }}</span>
-            vs last time ·
+            {% set d = a.wpi - previous.wpi %}
+            <span style="color:var(--{{ 'good' if d >= 0 else 'bad' }});font-weight:600">
+              {% if d >= 0 %}+{% endif %}{{ '%.1f' % d }}
+            </span>
+            vs last time ({{ previous.assessed_on | longdate }})
           {% endif %}
-          raw {{ a.wpi_raw }}</div>
+        </div>
       </div>
       <div class="tile">
         <div class="lbl">Risk score</div>

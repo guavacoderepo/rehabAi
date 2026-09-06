@@ -16,7 +16,11 @@
         <circle cx="71" cy="4" r="3.8" fill="var(--pink)" />
       </svg>
 
-      <div class="wordmark">{{ wordmark() }}</div>
+      <div class="wordmark" style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:8px;">
+        <div class="mark" style="background:transparent;box-shadow:none;border:none;width:auto;height:auto;padding:0;">
+          <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="RehabAI" style="height:200px;width:auto;object-fit:contain;">
+        </div>
+      </div>
 
       <h1>Welcome <em>back</em></h1>
       <p class="lede">Sign in to see how your patients are progressing today.</p>

@@ -31,11 +31,17 @@
     <div class="qcard">
       {% for it in d['items'] %}
         {% set scale = it.scale %}
-        <div class="q" data-min="{{ it['values'][0] }}" data-max="{{ it['values'][-1] }}"
+        {% set scale_values = it['values'] %}
+        <div class="q" data-min="{{ scale_values[0] }}" data-max="{{ scale_values[-1] }}"
              data-dir="{{ 1 if scale == 'fim' else -1 }}">
           <div class="q-l">
             <b>{{ it.label }}</b>
-            {% set current = values.get(it.key) %}
+            {# Check if values is a dictionary before calling .get() #}
+            {% if values is mapping %}
+              {% set current = values.get(it.key) %}
+            {% else %}
+              {% set current = none %}
+            {% endif %}
             <div class="ans {% if current is none %}empty{% endif %}">
               {% if current is not none %}{{ it.anchors[current] }}{% else %}Not answered yet{% endif %}
             </div>
@@ -43,7 +49,7 @@
           <div class="q-r">
             <span class="stag">{{ it.tag }}</span>
             <div class="scale">
-              {% for v in it['values'] %}
+              {% for v in scale_values %}
                 <input type="radio" id="{{ it.key }}_{{ v }}" name="{{ it.key }}" value="{{ v }}"
                        data-anchor="{{ it.anchors[v] }}"
                        {% if current is not none and current == v %}checked{% endif %} required>

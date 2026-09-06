@@ -18,7 +18,6 @@
       <span>{{ p.code }}</span>
       <span>{{ p.age }} years, {{ 'female' if p.sex == 'F' else 'male' }}</span>
       <span>Admitted <b>{{ p.admitted_on | longdate }}</b></span>
-      {% if p.consultant %}<span>Under <b>{{ p.consultant }}</b></span>{% endif %}
     </div>
   </div>
   <a class="btn btn-primary" href="{{ url_for('new_prediction', code=p.code) }}">
@@ -32,24 +31,24 @@
 {% if latest %}
 <div class="tiles">
   <div class="tile hero">
-    <div class="lbl">Chance of walking</div>
-    <div class="v num">{{ '%.1f' % latest.walk_prob }}<small>%</small></div>
-    <div class="foot">At discharge</div>
+    <div class="lbl" style="color:var(--ink-3)">Chance of walking</div>
+    <div class="v num" style="color:var(--ink-1)">{{ '%.1f' % latest.walk_prob }}<small style="color:var(--ink-3)">%</small></div>
+    <div class="foot" style="color:var(--ink-3)">At discharge</div>
   </div>
 
   <div class="tile">
-    <div class="lbl">WPI score</div>
-    <div class="v num">{{ latest.wpi_adj }}<small>/{{ adj_max }}</small></div>
+    <div class="lbl" style="color:var(--ink-3)">WPI score</div>
+    <div class="v num" style="color:var(--ink-1)">{{ '%.1f' % latest.wpi }}<small style="color:var(--ink-3)">points</small></div>
     <div class="foot">
       <span style="color:var(--{{ 'good' if delta >= 0 else 'bad' }});font-weight:600">
-        {{ delta | signed }}</span> since admission
+         {% if delta >= 0 %}+{% endif %}{{ '%.1f' % delta }}</span> since admission
     </div>
   </div>
 
   <div class="tile">
-    <div class="lbl">Risk score</div>
+    <div class="lbl" style="color:var(--ink-3)">Risk score</div>
     <div class="v num" style="color:var(--{{ risk_var(latest.risk_score) }})">
-      {{ '%.1f' % latest.risk_score }}<small>%</small>
+      {{ '%.1f' % latest.risk_score }}<small style="color:var(--ink-3)">/10</small>
     </div>
     <div class="foot">
       <span class="pill {{ risk_class(latest.risk_score) }}">
@@ -59,9 +58,9 @@
   </div>
 
   <div class="tile">
-    <div class="lbl">Assessments</div>
-    <div class="v num">{{ history | length }}</div>
-    <div class="foot">Last one {{ latest.assessed_on | ago }}</div>
+    <div class="lbl" style="color:var(--ink-3)">Assessments</div>
+    <div class="v num" style="color:var(--ink-1)">{{ history | length }}</div>
+    <div class="foot" style="color:var(--ink-3)">Last one {{ latest.assessed_on | ago }}</div>
   </div>
 </div>
 
@@ -71,13 +70,12 @@
     <div class="spacer"></div>
 
     <div class="seg" id="metricSeg">
-      <button type="button" class="on" data-metric="wpi_adj">WPI</button>
+      <button type="button" class="on" data-metric="wpi">WPI</button>
       <button type="button" data-metric="walk">Walking</button>
-      <button type="button" data-metric="risk">Risk</button>
     </div>
   </div>
 
-  <p class="hint" data-hint="wpi_adj">
+  <p class="hint" data-hint="wpi">
     Higher scores indicate improvement.
   </p>
 
@@ -85,15 +83,10 @@
     Model output at each assessment.
   </p>
 
-  <p class="hint hide" data-hint="risk">
-    Model output at each assessment.
-  </p>
-
   <div class="chartbox" id="chartbox" data-chart='[
     {%- for c in chart -%}
-      {"wpi_adj": {{ c.wpi_adj }},
-       "walk": {{ c.walk }},
-       "risk": {{ c.risk }},
+      {"wpi": {{ '%.1f' % c.wpi }},
+       "walk": {{ '%.1f' % c.walk }},
        "label": "{{ c.date | shortdate }}",
        "long": "{{ c.date | longdate }}"}
       {%- if not loop.last -%},{%- endif -%}
@@ -128,13 +121,13 @@
 
           <div>
             <span>WPI</span>
-            <b class="num">{{ a.wpi_adj }}</b>
+            <b class="num">{{ '%.1f' % a.wpi }}</b>
           </div>
 
           <div>
             <span>Risk</span>
             <b class="num" style="color:var(--{{ risk_var(a.risk_score) }})">
-              {{ '%.1f' % a.risk_score }}%
+              {{ '%.1f' % a.risk_score }}/10
             </b>
           </div>
         </div>
@@ -195,5 +188,33 @@
   </div>
 </div>
 {% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Force chart initialization
+  setTimeout(function() {
+    const chartbox = document.getElementById('chartbox');
+    if (chartbox && chartbox.dataset.chart) {
+      try {
+        const data = JSON.parse(chartbox.dataset.chart);
+        if (data.length > 0) {
+          // Trigger the chart render
+          if (typeof window.initChart === 'function') {
+            window.initChart('wpi');
+          } else {
+            // Fallback: simulate click on WPI button
+            const wpiBtn = document.querySelector('[data-metric="wpi"]');
+            if (wpiBtn) {
+              wpiBtn.click();
+            }
+          }
+        }
+      } catch(e) {
+        console.log('Chart data error:', e);
+      }
+    }
+  }, 100);
+});
+</script>
 
 {% endblock %}

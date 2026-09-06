@@ -17,35 +17,30 @@ DUMMY_PATIENTS = [
     {
         "code": "ROC-4821", "name": "Margaret Whitfield", "age": 68, "sex": "F",
         "diagnosis": "Left MCA infarct", "admitted_on": "2026-06-02",
-        "consultant": "Dr H. Bakare",
         "history": [("2026-06-03", 0.24), ("2026-06-17", 0.33), ("2026-07-01", 0.45),
                     ("2026-07-22", 0.58), ("2026-08-19", 0.66)],
     },
     {
         "code": "ROC-4835", "name": "Daniel Osei", "age": 41, "sex": "M",
         "diagnosis": "Traumatic brain injury", "admitted_on": "2026-06-14",
-        "consultant": "Dr H. Bakare",
         "history": [("2026-06-15", 0.12), ("2026-07-02", 0.19), ("2026-07-28", 0.31),
                     ("2026-08-25", 0.42)],
     },
     {
         "code": "ROC-4840", "name": "Priya Raghavan", "age": 55, "sex": "F",
         "diagnosis": "Incomplete spinal cord injury", "admitted_on": "2026-05-20",
-        "consultant": "Dr L. Moreno",
         "history": [("2026-05-21", 0.38), ("2026-06-11", 0.51), ("2026-07-09", 0.63),
                     ("2026-08-06", 0.74), ("2026-08-27", 0.79)],
     },
     {
         "code": "ROC-4852", "name": "Kenneth Ollerenshaw", "age": 73, "sex": "M",
         "diagnosis": "Right pontine haemorrhage", "admitted_on": "2026-07-01",
-        "consultant": "Dr L. Moreno",
         "history": [("2026-07-02", 0.16), ("2026-07-23", 0.22), ("2026-08-13", 0.21),
                     ("2026-08-30", 0.28)],
     },
     {
         "code": "ROC-4861", "name": "Amelia Croft", "age": 29, "sex": "F",
         "diagnosis": "Guillain-Barré syndrome", "admitted_on": "2026-07-18",
-        "consultant": "Dr H. Bakare",
         "history": [("2026-07-19", 0.31), ("2026-08-08", 0.55), ("2026-08-28", 0.72)],
     },
 ]
@@ -75,10 +70,10 @@ def insert_assessment(db, patient_id, patient_name, assessed_on, values,
     text = interpret(pred, previous, patient_name)
 
     columns = ["patient_id", "assessed_on", "clinician"] + ITEM_KEYS + [
-        "wpi_raw", "wpi_adj", "walk_prob", "risk_score", "interpretation"]
+        "wpi", "walk_prob", "risk_score", "interpretation"]
     params = [patient_id, assessed_on, clinician] + \
              [int(values[k]) for k in ITEM_KEYS] + [
-        pred["wpi_raw"], pred["wpi_adj"], pred["walk_prob"], pred["risk_score"],
+        pred["wpi"], pred["walk_prob"], pred["risk_score"],
         json.dumps({**text, "domains": pred["domains"]}),
     ]
     db.execute(
@@ -96,10 +91,10 @@ def seed(db):
 
     for p in DUMMY_PATIENTS:
         cur = db.execute(
-            "INSERT INTO patients (code, name, age, sex, diagnosis, admitted_on, consultant) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO patients (code, name, age, sex, diagnosis, admitted_on) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
             (p["code"], p["name"], p["age"], p["sex"], p["diagnosis"],
-             p["admitted_on"], p["consultant"]),
+             p["admitted_on"]),
         )
         patient_id = cur.lastrowid
 
