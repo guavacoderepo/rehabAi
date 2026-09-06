@@ -328,17 +328,21 @@ def inject_helpers():
 
 if __name__ == "__main__":
     with app.app_context():
-        database.init_db()
 
-        from seed import seed
+        # Create and seed the database only if the
+        # patients table does not exist.
+        if not database.database_ready():
 
-        # Only seed if there are no patients
-        count = database.get_db().execute(
-            "SELECT COUNT(*) FROM patients"
-        ).fetchone()[0]
+            database.init_db()
 
-        if count == 0:
+            from seed import seed
+
             n_p, n_a = seed(database.get_db())
-            print(f"Created {n_p} patients and {n_a} assessments")
+
+            print(
+                f"Created database with "
+                f"{n_p} patients and "
+                f"{n_a} assessments."
+            )
 
     app.run(debug=True)
