@@ -91,12 +91,9 @@ def insert_assessment(db, patient_id, patient_name, assessed_on, values,
 
 def seed(db):
     """Populate an initialised database. Returns (patients, assessments)."""
-    db.execute(
-        "INSERT OR IGNORE INTO users (username, email) VALUES (?, ?)",
-        ("a.demo", "a.demo@ntu.ac.uk"),
-    )
 
     n_assessments = 0
+
     for p in DUMMY_PATIENTS:
         cur = db.execute(
             "INSERT INTO patients (code, name, age, sex, diagnosis, admitted_on, consultant) "
@@ -109,8 +106,14 @@ def seed(db):
         previous = None
         for assessed_on, profile in p["history"]:
             values = make_scores(profile)
-            pred = insert_assessment(db, patient_id, p["name"], assessed_on,
-                                     values, previous)
+            pred = insert_assessment(
+                db,
+                patient_id,
+                p["name"],
+                assessed_on,
+                values,
+                previous
+            )
             previous = pred
             n_assessments += 1
 

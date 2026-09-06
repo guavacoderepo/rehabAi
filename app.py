@@ -62,31 +62,19 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = (request.form.get("username") or "").strip()
-        email = (request.form.get("email") or "").strip()
+        email = (request.form.get("email") or "").strip().lower()
+        password = request.form.get("password") or ""
 
-        error = None
-        if not username:
-            error = "Please enter your username."
-        elif "@" not in email:
-            error = "Please enter a valid email address."
-
-        if error:
-            flash(error)
-        else:
-            # No password in the prototype — add werkzeug.security before
-            # anything resembling real deployment.
-            conn = database.get_db()
-            conn.execute(
-                "INSERT INTO users (username, email) VALUES (?, ?) "
-                "ON CONFLICT(username) DO UPDATE SET email = excluded.email",
-                (username, email),
-            )
-            conn.commit()
+        if email == "admin@hotmail.com" and password == "12345":
             session.clear()
-            session["username"] = username
+            session["username"] = "admin"
             session["email"] = email
-            return redirect(request.args.get("next") or url_for("patients"))
+
+            return redirect(
+                request.args.get("next") or url_for("patients")
+            )
+
+        flash("Invalid email or password.")
 
     return render_template("login.html")
 
@@ -339,11 +327,18 @@ def inject_helpers():
 
 
 if __name__ == "__main__":
-    # Create and seed the database automatically on first run.
-    if not os.path.exists(app.config["DATABASE"]):
-        with app.app_context():
-            from seed import seed
-            database.init_db()
+    with app.app_context():
+        database.init_db()
+
+        from seed import seed
+
+        # Only seed if there are no patients
+        count = database.get_db().execute(
+            "SELECT COUNT(*) FROM patients"
+        ).fetchone()[0]
+
+        if count == 0:
             n_p, n_a = seed(database.get_db())
-            print(f"Created {app.config['DATABASE']} — {n_p} patients, {n_a} assessments")
+            print(f"Created {n_p} patients and {n_a} assessments")
+
     app.run(debug=True)
