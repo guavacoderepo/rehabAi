@@ -176,7 +176,11 @@ def patient(code):
     } for a in history]
 
     latest = history[-1] if history else None
-    delta = (latest["wpi_adj"] - history[0]["wpi_adj"]) if history else 0
+    delta = (
+        latest["wpi_adj"] - history[0]["wpi_adj"]
+        if latest is not None and history and history[0] is not None
+        else 0
+    )
 
     return render_template(
         "patient.html", p=p, history=history, entries=entries, chart=chart,
