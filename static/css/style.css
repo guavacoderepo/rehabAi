@@ -1,3 +1,4 @@
+
 /* =========================================================
    RehabAI — Clinical UI
    Clean, practical, human-designed interface
@@ -20,17 +21,18 @@
   --border: #e3e5e7;
   --border-dark: #d1d4d7;
 
+  /* Risk colors - 4 distinct bands */
   --good: #287a5f;
   --good-soft: #e9f4ef;
   
-  --mid: #b45309;
-  --mid-soft: #fef3c7;
+  --mid: #b45309;         /* Amber - Moderate risk */
+  --mid-soft: #fef3c7;    /* Light amber */
   
-  --warn: #c2410c;
-  --warn-soft: #ffedd5;
+  --warn: #c2410c;        /* Orange - High risk (darker than mid) */
+  --warn-soft: #ffedd5;   /* Light orange */
   
-  --bad: #b91c1c;
-  --bad-soft: #fee2e2;
+  --bad: #b91c1c;         /* Red - Very high risk */
+  --bad-soft: #fee2e2;    /* Light red */
 
   --sand: #f8f3ec;
   --sage: #edf3ee;
@@ -43,7 +45,7 @@
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, .04);
   --shadow-md: 0 3px 10px rgba(0, 0, 0, .06);
-}  /* <-- Add this closing brace */
+}
 
 
 /* =========================================================
@@ -285,53 +287,6 @@ h4 {
   border-radius: 50%;
   background: currentColor;
   flex: none;
-}
-
-
-/* =========================================================
-   PROGRESS BAR
-   ========================================================= */
-
-.progress-container {
-  margin-bottom: 20px;
-  padding: 12px 16px;
-  background: var(--surface-soft);
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-
-.progress-container .mini {
-  height: 6px;
-  border-radius: 4px;
-  background: var(--border);
-  overflow: hidden;
-  width: 100%;
-  margin-top: 0;
-}
-
-.progress-container .mini i {
-  display: block;
-  height: 100%;
-  background: var(--pink);
-  border-radius: 4px;
-  transition: width 0.3s ease, background 0.3s ease;
-  width: 0%;
-}
-
-.progress-container .mini i.complete {
-  background: var(--good);
-}
-
-.domain-status {
-  font-weight: 500;
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-left: 8px;
-}
-
-.domain-status .domain-filled {
-  font-weight: 700;
-  color: var(--pink);
 }
 
 
@@ -955,6 +910,7 @@ h4 {
 
 /* Main walking result */
 
+
 .tile.hero {
   background: var(--pink);
   border-color: var(--pink);
@@ -964,6 +920,7 @@ h4 {
 .tile.hero .lbl,
 .tile.hero .foot {
   color: rgba(255, 255, 255, .82);
+  background: rgba(171, 121, 121, 0.08);
 }
 
 .tile.hero .v small {
@@ -1393,31 +1350,11 @@ h4 {
 }
 
 @media (max-width: 600px) {
-  .phead h1 {
-    font-size: 27px;
+  .bar {
+    grid-template-columns: 112px 1fr 40px;
+    font-size: 12px;
   }
-  .panel {
-    padding: 16px;
-  }
-  .tiles {
-    grid-template-columns: 1fr 1fr;
-  }
-  .tile {
-    padding: 15px;
-  }
-  .tile .v {
-    font-size: 27px;
-  }
-  .ehead {
-    padding: 13px 14px;
-  }
-  .emet {
-    gap: 15px;
-  }
-  .progress-container {
-    padding: 10px 12px;
-  }
-} 
+}
 
 
 /* =========================================================
@@ -1575,11 +1512,6 @@ h4 {
   font-weight: 400;
 
   font-style: italic;
-}
-
-.q-l .ans .empty-warning {
-  color: var(--bad);
-  font-weight: 500;
 }
 
 .q-r {
@@ -1841,14 +1773,9 @@ h4 {
   border-radius: 5px;
 
   background: linear-gradient(90deg,
-      var(--good) 0%,
-      var(--good) 25%,
-      var(--mid) 25%,
-      var(--mid) 50%,
-      var(--warn) 50%,
-      var(--warn) 75%,
-      var(--bad) 75%,
-      var(--bad) 100%);
+      var(--good),
+      var(--warn),
+      var(--bad));
 
   position: relative;
 
@@ -2019,29 +1946,37 @@ h4 {
 
   transition:
     border-color .12s ease,
-        background-color .12s ease,
+    background-color .12s ease,
     color .12s ease;
 
   display: grid;
+
   place-items: center;
+
   cursor: pointer;
 }
 
 .scale label:hover {
   border-color: var(--pink);
+
   color: var(--pink-dark);
+
   transform: none;
 }
 
 .scale input:checked+label {
   background: var(--pink);
+
   border-color: var(--pink);
+
   color: #ffffff;
+
   box-shadow: none;
 }
 
 .scale input:focus-visible+label {
   outline: 2px solid var(--pink);
+
   outline-offset: 2px;
 }
 
@@ -2079,33 +2014,37 @@ h4 {
   .emet {
     gap: 15px;
   }
-  
-  .progress-container {
-    padding: 10px 12px;
-  }
 }
 
 @media (max-width: 430px) {
+
   .tiles {
     grid-template-columns: 1fr;
   }
+
   .btn {
     padding: 9px 14px;
   }
+
   .phead .btn-primary {
     width: 100%;
   }
+
   .q {
     padding: 14px;
   }
+
   .q-r {
     width: 100%;
   }
+
   .scale {
     width: 100%;
   }
+
+  .scale button,
   .scale label {
     flex: 1;
     min-width: 34px;
   }
-} 
+}
