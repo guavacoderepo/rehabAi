@@ -39,7 +39,7 @@
      Progress chart on the patient record.
      Data comes from <div id="chartbox" data-chart='[...]'>
      --------------------------------------------------------------- */
-  var chartState = { metric: "wpi_adj" };
+  var chartState = { metric: "wpi" };
 
   function drawChart() {
     var box = document.getElementById("chartbox");
@@ -110,7 +110,7 @@
         var i = +r.dataset.i, d = data[i], rect = box.getBoundingClientRect();
         tt.innerHTML = "<b>" + (pct ? d[key].toFixed(1) + "%" : d[key]) + "</b>" + d.long +
           '<br><span style="opacity:.75">Walking ' + d.walk.toFixed(1) +
-          "% · Risk " + d.risk.toFixed(1) + "%</span>";
+          "% · Risk " + d.risk.toFixed(1) + "/10</span>";
         tt.style.left = (X(i) / W * rect.width) + "px";
         tt.style.top = (Y(d[key]) / H * 290) + "px";
         tt.classList.add("on");
@@ -148,47 +148,174 @@
   }
 
   /* ---------------------------------------------------------------
-     Prediction form: live WPI tally, answer text, progress
-     Scale metadata comes from data-* attributes rendered by Jinja.
+     Prediction form: live progress tracking, domain status, answer text
      --------------------------------------------------------------- */
   function bindForm() {
     var form = document.getElementById("predictForm");
     if (!form) return;
 
-    var foot = document.getElementById("foot"),
-        total = +form.dataset.total;
+    var total = +form.dataset.total || 28;
+    var counters = document.querySelectorAll('.cnt');
+    var progressBars = document.querySelectorAll('.mini i');
+    var submitBtn = document.getElementById('submitBtn');
+    var domainStatuses = document.querySelectorAll('.domain-filled');
 
-    function update() {
-      var answered = 0, raw = 0, adj = 0;
+    function updateProgress() {
+      var answered = 0;
+      var domainData = {};
 
-      form.querySelectorAll(".q").forEach(function (q) {
-        var checked = q.querySelector("input:checked");
-        var ans = q.querySelector(".ans");
+      // Track answered questions per domain
+      document.querySelectorAll('.q').forEach(function (q) {
+        var domain = q.dataset.domain;
+        var checked = q.querySelector('input:checked');
+        var ans = q.querySelector('.ans');
+
+        // Update answer text
         if (!checked) {
-          ans.textContent = "Not answered yet";
-          ans.classList.add("empty");
-          return;
+          ans.textContent = '⚠️ Not answered yet';
+          ans.classList.add('empty');
+        } else {
+          answered++;
+          ans.textContent = checked.dataset.anchor || checked.value;
+          ans.classList.remove('empty');
         }
-        answered++;
-        var v = +checked.value,
-            min = +q.dataset.min,
-            max = +q.dataset.max,
-            dir = +q.dataset.dir;
-        raw += v;
-        adj += dir > 0 ? v - min : max - v;
-        ans.textContent = checked.dataset.anchor;
-        ans.classList.remove("empty");
+
+        // Track domain progress
+        if (!domainData[domain]) {
+          domainData[domain] = { total: 0, filled: 0 };
+        }
+        domainData[domain].total += 1;
+        if (checked) {
+          domainData[domain].filled += 1;
+        }
       });
 
-      foot.querySelector(".tw").textContent = adj;
-      foot.querySelector(".tr2").textContent = raw;
-      foot.querySelector(".cnt").textContent = answered + " of " + total + " answered";
-      foot.querySelector(".mini i").style.width = (answered / total * 100) + "%";
-      foot.querySelector(".submit").disabled = answered < total;
+      var percent = (answered / total) * 100;
+
+      // Update all counters
+      counters.forEach(function (counter) {
+        counter.textContent = answered + ' of ' + total + ' answered';
+      });
+
+      // Update all progress bars
+      progressBars.forEach(function (bar) {
+        bar.style.width = percent + '%';
+        if (answered === total) {
+          bar.style.background = 'var(--good)';
+          bar.classList.add('complete');
+        } else {
+          bar.style.background = 'var(--pink)';
+          bar.classList.remove('complete');
+        }
+      });
+
+      // Update domain statuses
+      domainStatuses.forEach(function (status) {
+        var sec = status.closest('.sec');
+        if (sec) {
+          // Find the domain key from the sec id or use the first matching domain
+          var domainId = sec.querySelector('h2').textContent.trim();
+          // Map domain name to id (simple mapping)
+          var domainMap = {
+            'Mobility': 'mob',
+            'ADL': 'adl',
+            'Cognitive / Communicative': 'cog',
+            'Physical Impairment': 'phys'
+          };
+          var key = domainMap[domainId] || domainId.toLowerCase();
+          if (domainData[key]) {
+            status.textContent = domainData[key].filled;
+          }
+        }
+      });
+
+      // Enable/disable submit button
+      if (submitBtn) {
+        submitBtn.disabled = answered < total;
+      }
+
+      // Update sticky footer if exists
+      var foot = document.getElementById('foot');
+      if (foot) {
+        var cnt = foot.querySelector('.cnt');
+        var mini = foot.querySelector('.mini i');
+        if (cnt) cnt.textContent = answered + ' of ' + total + ' answered';
+        if (mini) {
+          mini.style.width = percent + '%';
+          if (answered === total) {
+            mini.style.background = 'var(--good)';
+          } else {
+            mini.style.background = 'var(--pink)';
+          }
+        }
+        var submit = foot.querySelector('.submit');
+        if (submit) submit.disabled = answered < total;
+      }
     }
 
-    form.addEventListener("change", update);
-    update();
+    // Listen for changes on all radio buttons
+    form.querySelectorAll('input[type="radio"]').forEach(function (radio) {
+      radio.addEventListener('change', updateProgress);
+    });
+
+    // Initial update
+    updateProgress();
+  }
+
+  /* ---------------------------------------------------------------
+     Domain status update helper
+     --------------------------------------------------------------- */
+  function updateDomainStatuses() {
+    var domainData = {};
+
+    document.querySelectorAll('.q').forEach(function (q) {
+      var domain = q.dataset.domain;
+      var checked = q.querySelector('input:checked');
+      if (!domainData[domain]) {
+        domainData[domain] = { total: 0, filled: 0 };
+      }
+      domainData[domain].total += 1;
+      if (checked) {
+        domainData[domain].filled += 1;
+      }
+    });
+
+    document.querySelectorAll('.domain-filled').forEach(function (status) {
+      var sec = status.closest('.sec');
+      if (sec) {
+        var domainId = sec.querySelector('h2').textContent.trim();
+        var domainMap = {
+          'Mobility': 'mob',
+          'ADL': 'adl',
+          'Cognitive / Communicative': 'cog',
+          'Physical Impairment': 'phys'
+        };
+        var key = domainMap[domainId] || domainId.toLowerCase();
+        if (domainData[key]) {
+          status.textContent = domainData[key].filled;
+        }
+      }
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     Clear all prefilled values
+     --------------------------------------------------------------- */
+  function bindClearAll() {
+    var clearLink = document.querySelector('.tipbar a');
+    if (clearLink) {
+      clearLink.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelectorAll('.q input[type="radio"]').forEach(function (radio) {
+          radio.checked = false;
+        });
+        // Trigger update
+        var form = document.getElementById('predictForm');
+        if (form) {
+          form.dispatchEvent(new Event('change'));
+        }
+      });
+    }
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -197,5 +324,6 @@
     drawChart();
     bindTimeline();
     bindForm();
+    bindClearAll();
   });
 })();

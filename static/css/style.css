@@ -1,4 +1,3 @@
-
 /* =========================================================
    RehabAI — Clinical UI
    Clean, practical, human-designed interface
@@ -287,6 +286,53 @@ h4 {
   border-radius: 50%;
   background: currentColor;
   flex: none;
+}
+
+
+/* =========================================================
+   PROGRESS BAR
+   ========================================================= */
+
+.progress-container {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: var(--surface-soft);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.progress-container .mini {
+  height: 6px;
+  border-radius: 4px;
+  background: var(--border);
+  overflow: hidden;
+  width: 100%;
+  margin-top: 0;
+}
+
+.progress-container .mini i {
+  display: block;
+  height: 100%;
+  background: var(--pink);
+  border-radius: 4px;
+  transition: width 0.3s ease, background 0.3s ease;
+  width: 0%;
+}
+
+.progress-container .mini i.complete {
+  background: var(--good);
+}
+
+.domain-status {
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+
+.domain-status .domain-filled {
+  font-weight: 700;
+  color: var(--pink);
 }
 
 
@@ -910,7 +956,6 @@ h4 {
 
 /* Main walking result */
 
-
 .tile.hero {
   background: var(--pink);
   border-color: var(--pink);
@@ -920,7 +965,6 @@ h4 {
 .tile.hero .lbl,
 .tile.hero .foot {
   color: rgba(255, 255, 255, .82);
-  background: rgba(171, 121, 121, 0.08);
 }
 
 .tile.hero .v small {
@@ -1514,6 +1558,11 @@ h4 {
   font-style: italic;
 }
 
+.q-l .ans .empty-warning {
+  color: var(--bad);
+  font-weight: 500;
+}
+
 .q-r {
   display: flex;
 
@@ -1773,9 +1822,14 @@ h4 {
   border-radius: 5px;
 
   background: linear-gradient(90deg,
-      var(--good),
-      var(--warn),
-      var(--bad));
+      var(--good) 0%,
+      var(--good) 25%,
+      var(--mid) 25%,
+      var(--mid) 50%,
+      var(--warn) 50%,
+      var(--warn) 75%,
+      var(--bad) 75%,
+      var(--bad) 100%);
 
   position: relative;
 
@@ -1946,37 +2000,29 @@ h4 {
 
   transition:
     border-color .12s ease,
-    background-color .12s ease,
+        background-color .12s ease,
     color .12s ease;
 
   display: grid;
-
   place-items: center;
-
   cursor: pointer;
 }
 
 .scale label:hover {
   border-color: var(--pink);
-
   color: var(--pink-dark);
-
   transform: none;
 }
 
 .scale input:checked+label {
   background: var(--pink);
-
   border-color: var(--pink);
-
   color: #ffffff;
-
   box-shadow: none;
 }
 
 .scale input:focus-visible+label {
   outline: 2px solid var(--pink);
-
   outline-offset: 2px;
 }
 
@@ -2013,6 +2059,10 @@ h4 {
 
   .emet {
     gap: 15px;
+  }
+  
+  .progress-container {
+    padding: 10px 12px;
   }
 }
 

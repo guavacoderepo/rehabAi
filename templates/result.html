@@ -34,10 +34,16 @@
         <div class="foot">
           {% if previous %}
             {% set d = a.wpi - previous.wpi %}
-            <span style="color:var(--{{ 'good' if d >= 0 else 'bad' }});font-weight:600">
-              {% if d >= 0 %}+{% endif %}{{ '%.1f' % d }}
+            <span style="color:var(--{{ 'bad' if d >= 0 else 'good' }});font-weight:600">
+              {% if d >= 0 %}
+                ▼ Declined by {{ '%.1f' % d }}
+              {% else %}
+                ▲ Improved by {{ '%.1f' % (d * -1) }}
+              {% endif %}
             </span>
-            vs last time ({{ previous.assessed_on | longdate }})
+            since last assessment ({{ previous.assessed_on | longdate }})
+          {% else %}
+            <span style="color:var(--ink-3);font-style:italic;">Baseline assessment</span>
           {% endif %}
         </div>
       </div>

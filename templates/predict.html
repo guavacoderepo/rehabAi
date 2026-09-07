@@ -13,6 +13,17 @@
   <span class="lbl-sm">New prediction · {{ p.name }} · {{ p.code }}</span>
   <h1>How is {{ first }} doing today?</h1>
   <p>Score all 28 admission items as they are <b>today</b>. Hover a number to see what it means.</p>
+  {% if previous %}
+    <div class="tipbar" style="margin-top:12px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 8v4M12 16h.01"/>
+      </svg>
+      <span>Prefilling from last assessment on <b>{{ previous.assessed_on | longdate }}</b>. 
+        <a href="{{ url_for('new_prediction', code=p.code) }}" style="color:var(--pink);text-decoration:underline;">Clear all</a>
+      </span>
+    </div>
+  {% endif %}
 </div>
 
 <form method="post" id="predictForm" data-total="28"
@@ -23,17 +34,33 @@
     <input type="date" id="assessed_on" name="assessed_on" value="{{ assessed_on }}" required>
   </div>
 
+  <!-- Progress bar at top -->
+  <div class="progress-container" style="margin-bottom:20px;padding:12px 16px;background:var(--surface-soft);border-radius:8px;border:1px solid var(--border);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <span style="font-size:13px;font-weight:600;color:var(--text-secondary);">Progress</span>
+      <span class="cnt" style="font-size:13px;color:var(--text-secondary);">0 of 28 answered</span>
+    </div>
+    <div class="mini" style="height:6px;border-radius:4px;background:var(--border);overflow:hidden;width:100%;">
+      <i style="width:0%;display:block;height:100%;background:var(--pink);border-radius:4px;transition:width 0.3s ease;"></i>
+    </div>
+  </div>
+
   {% for d in domains %}
     <div class="sec">
       <h2>{{ d.name }}</h2>
       <span class="count">{{ d['items'] | length }} items</span>
+      <span class="domain-status" style="font-size:12px;color:var(--text-muted);margin-left:8px;">
+        <span class="domain-filled">0</span>/{{ d['items'] | length }} filled
+      </span>
     </div>
     <div class="qcard">
       {% for it in d['items'] %}
         {% set scale = it.scale %}
         {% set scale_values = it['values'] %}
         <div class="q" data-min="{{ scale_values[0] }}" data-max="{{ scale_values[-1] }}"
-             data-dir="{{ 1 if scale == 'fim' else -1 }}">
+             data-dir="{{ 1 if scale == 'fim' else -1 }}"
+             data-domain="{{ d.id }}"
+             data-key="{{ it.key }}">
           <div class="q-l">
             <b>{{ it.label }}</b>
             {# Check if values is a dictionary before calling .get() #}
@@ -43,7 +70,11 @@
               {% set current = none %}
             {% endif %}
             <div class="ans {% if current is none %}empty{% endif %}">
-              {% if current is not none %}{{ it.anchors[current] }}{% else %}Not answered yet{% endif %}
+              {% if current is not none %}
+                {{ it.anchors[current] }}
+              {% else %}
+                <span style="color:var(--bad);">⚠️ Not answered yet</span>
+              {% endif %}
             </div>
           </div>
           <div class="q-r">
@@ -69,11 +100,12 @@
     </div>
     <div class="spacer"></div>
     <a class="btn btn-ghost" href="{{ url_for('patient', code=p.code) }}">Cancel</a>
-    <button class="btn btn-primary submit" type="submit">
+    <button class="btn btn-primary submit" type="submit" id="submitBtn" disabled>
       Save and predict
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
            stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </button>
   </div>
 </form>
+
 {% endblock %}
