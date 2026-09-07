@@ -57,7 +57,7 @@
       {{ '%.1f' % latest.risk_score }}<small style="color:var(--ink-3)">/10</small>
     </div>
     <div class="foot">
-      <span class="pill {{ risk_class(latest.risk_score) }}">
+      <span class="pill {{ risk_class(latest.wpi) }}">
         <span class="dot"></span>{{ risk_band(latest.wpi) }} risk
       </span>
     </div>
