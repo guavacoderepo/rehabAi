@@ -21,14 +21,18 @@
   --border: #e3e5e7;
   --border-dark: #d1d4d7;
 
+  /* Risk colors - 4 distinct bands */
   --good: #287a5f;
   --good-soft: #e9f4ef;
-
-  --warn: #9a681d;
-  --warn-soft: #faf2df;
-
-  --bad: #b4234d;
-  --bad-soft: #f9e8ed;
+  
+  --mid: #b45309;         /* Amber - Moderate risk */
+  --mid-soft: #fef3c7;    /* Light amber */
+  
+  --warn: #c2410c;        /* Orange - High risk (darker than mid) */
+  --warn-soft: #ffedd5;   /* Light orange */
+  
+  --bad: #b91c1c;         /* Red - Very high risk */
+  --bad-soft: #fee2e2;    /* Light red */
 
   --sand: #f8f3ec;
   --sage: #edf3ee;
@@ -251,9 +255,15 @@ h4 {
   font-weight: 600;
 }
 
+/* Risk class styles */
 .p-good {
   background: var(--good-soft);
   color: var(--good);
+}
+
+.p-mid {
+  background: var(--mid-soft);
+  color: var(--mid);
 }
 
 .p-warn {

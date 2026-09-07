@@ -354,9 +354,9 @@ def risk_class(risk):
     if risk <= QUANTILE_BANDS.get("q25", 0):
         return "p-good"
     elif risk <= QUANTILE_BANDS.get("q50", 0):
-        return "p-warn"
+        return "p-mid"
     elif risk <= QUANTILE_BANDS.get("q75", 0):
-        return "p-bad"
+        return "p-warn"
     else:
         return "p-bad"  # Highest risk
 
@@ -366,9 +366,9 @@ def risk_var(risk):
     if risk <= QUANTILE_BANDS.get("q25", 0):
         return "good"
     elif risk <= QUANTILE_BANDS.get("q50", 0):
-        return "warn"
+        return "mid"
     elif risk <= QUANTILE_BANDS.get("q75", 0):
-        return "bad"
+        return "warn"
     else:
         return "bad"  # Highest risk
 
