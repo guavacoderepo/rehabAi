@@ -35,6 +35,17 @@ app.config.from_mapping(
 database.init_app(app)
 
 
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
+
+
 # ---------------------------------------------------------------------------
 # Auth
 # ---------------------------------------------------------------------------
@@ -113,7 +124,7 @@ def patients():
             "count": len(history),
         })
 
-    needs_review = sum(1 for p in people if wpi_barrier_band(p["latest"]["risk_score"]) == "Higher barrier burden")
+    needs_review = sum(1 for p in people if wpi_barrier_band(p["latest"]["wpi"]) == "Higher barrier burden")
 
     if q:
         ql = q.lower()
@@ -121,7 +132,7 @@ def patients():
                   if ql in (p["row"]["name"] + p["row"]["code"] +
                             p["row"]["diagnosis"]).lower()]
     if flt == "high":
-        people = [p for p in people if wpi_barrier_band(p["latest"]["risk_score"]) == "Higher barrier burden"]
+        people = [p for p in people if wpi_barrier_band(p["latest"]["wpi"]) == "Higher barrier burden"]
     elif flt == "improving":
         people = [p for p in people if p["delta"] > 0]
 
@@ -217,6 +228,8 @@ def new_prediction(code):
         pred = predict(values)
         previous = dict(history[-1]) if history else None
         text = interpret(pred, previous, p["name"])
+
+        logger.info(f"Interpretation for {p['name']}: {json.dumps(text)}")
 
         conn = database.get_db()
         columns = ["patient_id", "assessed_on"] + ITEM_KEYS + [

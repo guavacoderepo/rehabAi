@@ -42,9 +42,9 @@
       </div>
 
       <div class="cell risk" style="flex:1;min-width:160px;text-align:right;">
-        <span class="pill {{ risk_class(a.risk_score) }}" style="white-space:nowrap;display:inline-flex;align-items:center;gap:6px;">
+        <span class="pill {{ risk_class(a.wpi) }}" style="white-space:nowrap;display:inline-flex;align-items:center;gap:6px;">
           <span class="dot"></span>
-          {{ '%.1f' % a.risk_score }}% {{ risk_band(a.risk_score) }} risk
+          {{ '%.1f' % a.risk_score }}% {{ risk_band(a.wpi) }} risk
         </span>
         <span class="lbl" style="display:block;margin-top:4px;">Last seen {{ a.assessed_on | ago }}</span>
       </div>

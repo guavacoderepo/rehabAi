@@ -47,12 +47,12 @@
 
   <div class="tile">
     <div class="lbl" style="color:var(--ink-3)">Risk score</div>
-    <div class="v num" style="color:var(--{{ risk_var(latest.risk_score) }})">
+    <div class="v num" style="color:var(--{{ risk_var(latest.wpi) }})">
       {{ '%.1f' % latest.risk_score }}<small style="color:var(--ink-3)">/10</small>
     </div>
     <div class="foot">
       <span class="pill {{ risk_class(latest.risk_score) }}">
-        <span class="dot"></span>{{ risk_band(latest.risk_score) }} risk
+        <span class="dot"></span>{{ risk_band(latest.wpi) }} risk
       </span>
     </div>
   </div>
@@ -126,14 +126,14 @@
 
           <div>
             <span>Risk</span>
-            <b class="num" style="color:var(--{{ risk_var(a.risk_score) }})">
-              {{ '%.1f' % a.risk_score }}/10
+            <b class="num" style="color:var(--{{ risk_var(a.wpi) }})">
+              {{ '%.1f' % a.wpi }}/10
             </b>
           </div>
         </div>
 
-        <span class="pill {{ risk_class(a.risk_score) }}">
-          <span class="dot"></span>{{ risk_band(a.risk_score) }}
+        <span class="pill {{ risk_class(a.wpi) }}">
+          <span class="dot"></span>{{ risk_band(a.wpi) }}
         </span>
 
         <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"

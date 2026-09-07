@@ -2,6 +2,7 @@
 RehabAI — Scoring instruments, WPI calculation, and outcome prediction.
 """
 
+from asyncio.log import logger
 import os
 import json
 import joblib
@@ -210,6 +211,7 @@ DOMAIN_VIEW = [
     for d in DOMAINS
 ]
 
+
 def apply_dev_feature_types(X, numeric_cols, categorical_cols):
     """Apply feature typing learned from development data."""
     X_clean = X.copy()
@@ -296,6 +298,22 @@ def score_new_patient(patient_df: DataFrame):
     return output, component_points, patient_bins
 
 
+def domain_score(values, domain_id):
+    """Calculate domain-specific functional attainment (0.0-1.0)."""
+    got = mx = 0
+    for i in ITEMS:
+        if i["domain"] != domain_id:
+            continue
+        s = SCALES[i["scale"]]
+        x = int(values.get(i["key"], s["min"]))
+        if s["dir"] > 0:
+            got += (x - s["min"])
+        else:
+            got += (s["max"] - x)
+        mx += s["max"] - s["min"]
+    return got / mx if mx > 0 else 0.0
+
+
 def predict(values):
     """Predict walking probability for a single patient."""
     df = pd.DataFrame([values])
@@ -303,50 +321,63 @@ def predict(values):
     wpi = output["WPI"].iloc[0]
     walk_prob = output["EstimatedWalkingProbability_percent"].iloc[0]
 
+    risk_score = wpi / QUANTILE_BANDS["q95"] * 10
+    risk_score = np.clip(risk_score, 0, 10)
+
+    # Calculate domain scores
+    domains = {
+        d["id"]: round(domain_score(values, d["id"]) * 100)
+        for d in DOMAINS
+    }
+
     return {
         "wpi": wpi,
         "walk_prob": round(walk_prob, 1),
-        "risk_score": round(100 - walk_prob, 1),
-        "domains": {},
+        "risk_score": round(risk_score, 1),
+        "domains": domains,
     }
 
 
-def wpi_barrier_band(score):
+def wpi_barrier_band(wpi):
     """Classify WPI score into barrier burden bands using quantiles."""
-    if score <= QUANTILE_BANDS["q25"]:
+    if wpi <= QUANTILE_BANDS.get("q25", 0):
         return "Lower barrier burden"
-    if score <= QUANTILE_BANDS["q50"]:
+    if wpi <= QUANTILE_BANDS.get("q50", 0):
         return "Lower-intermediate barrier burden"
-    if score <= QUANTILE_BANDS["q75"]:
+    if wpi <= QUANTILE_BANDS.get("q75", 0):
         return "Higher-intermediate barrier burden"
     return "Higher barrier burden"
 
 
 def risk_class(risk):
     """CSS class for UI styling based on risk score."""
-    if risk < 30:
+    if risk <= QUANTILE_BANDS.get("q25", 0):
         return "p-good"
-    elif risk < 60:
+    elif risk <= QUANTILE_BANDS.get("q50", 0):
         return "p-warn"
-    else:
+    elif risk <= QUANTILE_BANDS.get("q75", 0):
         return "p-bad"
+    else:
+        return "p-bad"  # Highest risk
 
 
 def risk_var(risk):
     """CSS variable for UI styling based on risk score."""
-    if risk < 30:
+    if risk <= QUANTILE_BANDS.get("q25", 0):
         return "good"
-    elif risk < 60:
+    elif risk <= QUANTILE_BANDS.get("q50", 0):
         return "warn"
-    else:
+    elif risk <= QUANTILE_BANDS.get("q75", 0):
         return "bad"
+    else:
+        return "bad"  # Highest risk
 
 
 def interpret(pred, previous=None, patient_name="Patient"):
     """Generate plain-English clinical interpretation."""
     first = patient_name.split()[0] if patient_name else "Patient"
     wpi = pred.get("wpi", 0)
-    risk = pred.get("risk_score", 50)
+    risk = pred.get("risk_score", 0)
     band = wpi_barrier_band(wpi)
     
     lead = {
@@ -358,8 +389,8 @@ def interpret(pred, previous=None, patient_name="Patient"):
     
     body = (
         f"There is a {pred.get('walk_prob', 0):.1f}% probability of walking independently "
-        f"or with supervision by discharge. The WPI score of {wpi:.0f} places {first} in the "
-        f"'{band.lower()}' category, with a corresponding risk score of {risk:.1f}%."
+        f"or with supervision by discharge. The WPI score of {wpi:.0f} points places {first} in the "
+        f"'{band.lower()}' category, with a corresponding risk score of {risk:.1f}/10."
     )
     
     recs = []

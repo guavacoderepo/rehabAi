@@ -13,12 +13,12 @@ from flask import current_app, g
 # ---------------------------------------------------------------------------
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SOURCE_DB = os.path.join(BASE_DIR, "rehadai.db")
+SOURCE_DB = os.path.join(BASE_DIR, "rehabai.db")
 
 # Vercel's deployed filesystem is read-only.
 # /tmp is writable, so use a copy of the bundled database there.
 if os.environ.get("VERCEL"):
-    DB_PATH = "/tmp/rehadai.db"
+    DB_PATH = "/tmp/rehabai.db"
 
     if not os.path.exists(DB_PATH):
         if os.path.exists(SOURCE_DB):

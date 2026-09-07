@@ -6,7 +6,8 @@ for each. Run with:  flask seed-db
 import json
 import math
 
-from model import (ITEMS, SCALES, ITEM_KEYS, predict, interpret)
+from model import (ITEMS, SCALES, ITEM_KEYS, DOMAINS, predict, interpret, domain_score)
+
 
 # ---------------------------------------------------------------------------
 # 5 dummy patients.
@@ -63,17 +64,32 @@ def make_scores(profile):
     return values
 
 
+def calculate_domain_scores(values):
+    """Calculate domain scores (0-100) for all domains."""
+    domains = {}
+    for d in DOMAINS:
+        domains[d["id"]] = round(domain_score(values, d["id"]) * 100)
+    return domains
+
+
 def insert_assessment(db, patient_id, patient_name, assessed_on, values,
                       previous=None, clinician="seed"):
     """Compute, interpret and store one assessment. Returns the prediction."""
     pred = predict(values)
+    
+    # Calculate domain scores if not already in pred
+    if "domains" not in pred or not pred["domains"]:
+        pred["domains"] = calculate_domain_scores(values)
+    
     text = interpret(pred, previous, patient_name)
 
     columns = ["patient_id", "assessed_on", "clinician"] + ITEM_KEYS + [
         "wpi", "walk_prob", "risk_score", "interpretation"]
     params = [patient_id, assessed_on, clinician] + \
              [int(values[k]) for k in ITEM_KEYS] + [
-        pred["wpi"], pred["walk_prob"], pred["risk_score"],
+        pred["wpi"], 
+        pred["walk_prob"], 
+        pred["risk_score"],
         json.dumps({**text, "domains": pred["domains"]}),
     ]
     db.execute(

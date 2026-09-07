@@ -44,8 +44,8 @@
       <div class="tile">
         <div class="lbl">Risk score</div>
         <div class="v num" style="color:var(--{{ risk_var(a.risk_score) }})">
-          {{ '%.1f' % a.risk_score }}<small>%</small></div>
-        <div class="riskline"><i style="left:{{ a.risk_score }}%"></i></div>
+          {{ '%.1f' % a.risk_score }}<small>/ 10</small></div>
+        <div class="riskline"><i style="left:{{ (a.risk_score / 10) * 100 }}%"></i></div>
         <div class="rsc"><span>Low</span><span>Moderate</span><span>High</span></div>
       </div>
     </div>
