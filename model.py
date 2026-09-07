@@ -349,25 +349,25 @@ def wpi_barrier_band(wpi):
     return "Higher barrier burden"
 
 
-def risk_class(risk):
+def risk_class(wpi):
     """CSS class for UI styling based on risk score."""
-    if risk <= QUANTILE_BANDS.get("q25", 0):
+    if wpi <= QUANTILE_BANDS.get("q25", 0):
         return "p-good"
-    elif risk <= QUANTILE_BANDS.get("q50", 0):
+    elif wpi <= QUANTILE_BANDS.get("q50", 0):
         return "p-mid"
-    elif risk <= QUANTILE_BANDS.get("q75", 0):
+    elif wpi <= QUANTILE_BANDS.get("q75", 0):
         return "p-warn"
     else:
         return "p-bad"  # Highest risk
 
 
-def risk_var(risk):
+def risk_var(wpi):
     """CSS variable for UI styling based on risk score."""
-    if risk <= QUANTILE_BANDS.get("q25", 0):
+    if wpi <= QUANTILE_BANDS.get("q25", 0):
         return "good"
-    elif risk <= QUANTILE_BANDS.get("q50", 0):
+    elif wpi <= QUANTILE_BANDS.get("q50", 0):
         return "mid"
-    elif risk <= QUANTILE_BANDS.get("q75", 0):
+    elif wpi <= QUANTILE_BANDS.get("q75", 0):
         return "warn"
     else:
         return "bad"  # Highest risk
@@ -377,7 +377,7 @@ def interpret(pred, previous=None, patient_name="Patient"):
     """Generate plain-English clinical interpretation."""
     first = patient_name.split()[0] if patient_name else "Patient"
     wpi = pred.get("wpi", 0)
-    risk = pred.get("risk_score", 0)
+    barrier = pred.get("risk_score", 0)
     band = wpi_barrier_band(wpi)
     
     lead = {
@@ -389,8 +389,8 @@ def interpret(pred, previous=None, patient_name="Patient"):
     
     body = (
         f"There is a {pred.get('walk_prob', 0):.1f}% probability of walking independently "
-        f"or with supervision by discharge. The WPI score of {wpi:.0f} points places {first} in the "
-        f"'{band.lower()}' category, with a corresponding risk score of {risk:.1f}/10."
+        f"or with supervision by discharge. The WPI score of {wpi:.1f} points places {first} in the "
+        f"'{band.lower()}' category, with a corresponding barrier score of {barrier:.1f}/10."
     )
     
     recs = []
@@ -416,9 +416,9 @@ def interpret(pred, previous=None, patient_name="Patient"):
     else:
         delta = pred.get("wpi", 0) - previous.get("wpi", 0)
         if delta > 3:
-            recs.append(f"WPI improved by {delta:.0f} points — current plan is effective.")
+            recs.append(f"WPI improved by {delta:.1f} points — current plan is effective.")
         elif delta < -3:
-            recs.append(f"WPI decreased by {abs(delta):.0f} points — check for infection, pain, or deconditioning.")
+            recs.append(f"WPI decreased by {abs(delta):.1f} points — check for infection, pain, or deconditioning.")
         else:
             recs.append("WPI stable. Consider reviewing the rehabilitation plan.")
     

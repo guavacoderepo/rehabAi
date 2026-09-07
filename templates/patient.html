@@ -46,7 +46,7 @@
   </div>
 
   <div class="tile">
-    <div class="lbl" style="color:var(--ink-3)">Risk score</div>
+    <div class="lbl" style="color:var(--ink-3)">Barrier score</div>
     <div class="v num" style="color:var(--{{ risk_var(latest.wpi) }})">
       {{ '%.1f' % latest.risk_score }}<small style="color:var(--ink-3)">/10</small>
     </div>
@@ -125,7 +125,7 @@
           </div>
 
           <div>
-            <span>Risk</span>
+            <span>Barrier</span>
             <b class="num" style="color:var(--{{ risk_var(a.wpi) }})">
               {{ '%.1f' % a.risk_score }}/10
             </b>
