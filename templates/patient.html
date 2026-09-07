@@ -40,8 +40,14 @@
     <div class="lbl" style="color:var(--ink-3)">WPI score</div>
     <div class="v num" style="color:var(--ink-1)">{{ '%.1f' % latest.wpi }}<small style="color:var(--ink-3)">points</small></div>
     <div class="foot">
-      <span style="color:var(--{{ 'good' if delta >= 0 else 'bad' }});font-weight:600">
-         {% if delta >= 0 %}+{% endif %}{{ '%.1f' % delta }}</span> since admission
+      <span style="color:var(--{{ 'bad' if delta >= 0 else 'good' }});font-weight:600">
+        {% if delta >= 0 %}
+          ▼ Declined by {{ '%.1f' % delta }}
+        {% else %}
+          ▲ Improved by {{ '%.1f' % (delta * -1) }}
+        {% endif %}
+      </span>
+      since admission
     </div>
   </div>
 
