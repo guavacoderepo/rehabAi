@@ -77,7 +77,7 @@ def login():
 
         if email == "admin@hotmail.com" and password == "12345":
             session.clear()
-            session["username"] = "admin"
+            session["username"] = "Admin"
             session["email"] = email
 
             return redirect(
@@ -228,8 +228,6 @@ def new_prediction(code):
         pred = predict(values)
         previous = dict(history[-1]) if history else None
         text = interpret(pred, previous, p["name"])
-
-        logger.info(f"Interpretation for {p['name']}: {json.dumps(text)}")
 
         conn = database.get_db()
         columns = ["patient_id", "assessed_on"] + ITEM_KEYS + [

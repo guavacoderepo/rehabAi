@@ -86,14 +86,32 @@ SCALES = {
             5: "Total dependency",
         },
     },
+    "npds_3points": {
+        "min": 0, "max": 3, "dir": -1, "tag": "NPDS",
+        "anchors": {
+            0: "No help needed",
+            1: "Low dependency (regular help)",
+            2: "High dependency (constant help)",
+            3: "Total dependency",
+        },
+    },
+    "npds_4points": {
+        "min": 0, "max": 4, "dir": -1, "tag": "NPDS",
+        "anchors": {
+            0: "No help needed",
+            1: "Minimal help (occasional)",
+            2: "Low dependency (regular help)",
+            3: "High dependency (constant help)",
+            4: "Total dependency",
+        },
+    },
     "nis": {
-        "min": 0, "max": 4, "dir": -1, "tag": "NIS",
+        "min": 0, "max": 3, "dir": -1, "tag": "NIS",
         "anchors": {
             0: "No impairment",
             1: "Mild impairment",
             2: "Moderate impairment",
             3: "Severe impairment",
-            4: "Complete loss",
         },
     },
     "npds_binary": {  # Binary NPDS items (0 or 5 only)
@@ -127,7 +145,7 @@ DOMAINS = [
             ("fimfam_transfer_toilet_adm", "Transfer: toilet", "fim"),
             ("fimfam_transfer_bath_adm", "Transfer: bath/shower", "fim"),
             ("fimfam_transfer_car_adm", "Transfer: car", "fim"),
-            ("npds_mobility_adm", "Mobility dependency", "npds"),
+            ("npds_mobility_adm", "Mobility dependency", "npds_4points"),
         ],
     },
     {
@@ -157,7 +175,7 @@ DOMAINS = [
             ("fimfam_writing_adm", "Writing", "fim"),
             ("nis_cognitive_adm", "Cognitive impairment", "nis"),
             ("nis_perceptual_adm", "Perceptual impairment", "nis"),
-            ("npds_safety_adm", "Safety supervision", "npds"),
+            ("npds_safety_adm", "Safety supervision", "npds_3points"),
             ("npds_specialing_adm", "1:1 nursing (specialing)", "npds_binary"),  # 0 or 5 only
         ],
     },
@@ -270,6 +288,7 @@ def score_binned_dataframe(X_binned):
         component_points[feature] = values.map(mapping).astype(float)
     
     total_wpi = component_points.sum(axis=1)
+
     return component_points, total_wpi
 
 
@@ -323,6 +342,8 @@ def predict(values):
 
     risk_score = wpi / QUANTILE_BANDS["q95"] * 10
     risk_score = np.clip(risk_score, 0, 10)
+
+    logger.info(f"Predicted WPI: {wpi:.1f}, quantile 95: {QUANTILE_BANDS['q95']:.1f}, risk score: {risk_score:.1f}, walk probability: {walk_prob:.1f}%")
 
     # Calculate domain scores
     domains = {
