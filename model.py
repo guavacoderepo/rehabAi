@@ -435,10 +435,10 @@ def interpret(pred, previous=None, patient_name="Patient"):
     if previous is None:
         recs.append("This is the baseline assessment. Re-score every 2 weeks to track progress.")
     else:
-        delta = pred.get("wpi", 0) - previous.get("wpi", 0)
-        if delta > 3:
+        delta = previous.get("wpi", 0) - pred.get("wpi", 0)
+        if delta > 2:
             recs.append(f"WPI improved by {delta:.1f} points — current plan is effective.")
-        elif delta < -3:
+        elif delta < -2:
             recs.append(f"WPI decreased by {abs(delta):.1f} points — check for infection, pain, or deconditioning.")
         else:
             recs.append("WPI stable. Consider reviewing the rehabilitation plan.")
