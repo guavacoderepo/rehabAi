@@ -343,7 +343,7 @@ def predict(values):
     risk_score = wpi / QUANTILE_BANDS["q95"] * 10
     risk_score = np.clip(risk_score, 0, 10)
 
-    logger.info(f"Predicted WPI: {wpi:.1f}, quantile 95: {QUANTILE_BANDS['q95']:.1f}, risk score: {risk_score:.1f}, walk probability: {walk_prob:.1f}%")
+    logger.info(f"Predicted WPI: {wpi:.1f}, risk score: {risk_score:.1f}, walk probability: {walk_prob:.1f}%")
 
     # Calculate domain scores
     domains = {
