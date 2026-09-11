@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}RehabAI — Home{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="home-hero">
+  <div class="home-hero-text">
+    <p class="eyebrow">Clinical decision support</p>
+    <h1>Predict walking recovery.<br>Explain every score.</h1>
+    <p class="lede">
+      RehabAI turns a short bedside assessment into a clear, interpretable
+      prediction of walking ability for each patient — with the reasoning
+      shown alongside the numbers.
+    </p>
+    <div class="home-actions">
+      <a class="btn btn-primary" href="{{ url_for('patients') }}">Go to patients</a>
+      <a class="btn btn-ghost" href="#concepts">Learn the concepts</a>
+    </div>
+  </div>
+  <div class="home-hero-card">
+    <div class="home-metric">
+      <div class="lbl">Walking Probability Index</div>
+      <div class="v">33.4</div>
+      <div class="sub">Lower-intermediate — recovery is plausible</div>
+    </div>
+    <div class="home-metric">
+      <div class="lbl">Barrier Burden</div>
+      <div class="v">5.7<small>/10</small></div>
+      <div class="sub">Lower-intermediate — some barriers to address</div>
+    </div>
+    <div class="home-metric">
+      <div class="lbl">Walking Probability</div>
+      <div class="v">70.0<small>%</small></div>
+      <div class="sub">Chance of independent walking</div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE IMAGE -->
+<section class="home-section">
+  <h2>How RehabAI works</h2>
+  <p>
+    A short bedside assessment feeds into a model that estimates the patient's
+    barrier burden, walking probability, and overall walking recovery outlook.
+  </p>
+  <figure class="home-figure">
+    <img src="{{ url_for('static', filename='assets/pipeline.png') }}"
+         alt="RehabAI pipeline: assessment → model → WPI, barrier burden, walking probability">
+  </figure>
+</section>
+
+<!-- WHAT IS WPI -->
+<section class="home-section" id="concepts">
+  <h2>What is the WPI?</h2>
+    <p>
+        The <b>Walking Probability Index (WPI)</b> is a score between
+        <b>0 and 70</b> that captures how much the patient's current condition
+        is likely to hinder their recovery of independent walking.
+    </p>
+    <p>
+        <b>Lower is better.</b> A low WPI means few barriers stand in the way —
+        the patient is well positioned to walk again. A high WPI means more
+        obstacles are present, and recovery is likely to require greater support.
+    </p>
+
+    <ul class="home-list">
+        <li><b>0 - 20</b> — Low barrier burden. Independent walking is likely.</li>
+        <li><b>21 - 45</b> — Moderate barrier burden. Recovery is plausible with rehabilitation.</li>
+        <li><b>46 - 70</b> — High barrier burden. Significant support may be needed.</li>
+    </ul>
+    <p class="muted">
+        WPI is <b>not a diagnosis</b>. It's a decision-support signal meant to sit
+        alongside clinical judgement.
+    </p>
+</section>
+
+<!-- WHAT A GOOD WPI IS -->
+<section class="home-section">
+  <h2>What counts as a "good" WPI?</h2>
+  <p>
+    There is no universal "good" value — it depends on context. In practice:
+  </p>
+  <ul class="home-list">
+    <li><b>Lower is better</b> for the goal of walking independently.</li>
+    <li>A <b>falling WPI over time</b> is usually a good sign — barriers are reducing.</li>
+    <li>A <b>rising WPI</b> between visits may warrant a review of the care plan.</li>
+  </ul>
+</section>
+
+<!-- WALKING PROBABILITY -->
+<section class="home-section">
+  <h2>Walking probability</h2>
+  <p>
+    <b>Walking probability</b> is the chance that the patient will be able to
+    walk without physical assistance within the target time window. It is
+    derived from the WPI and shown as a percentage in the patient view.
+  </p>
+  <ul class="home-list">
+    <li><b>High walking probability</b> — the patient is likely to regain independent walking.</li>
+    <li><b>Low walking probability</b> — the patient may need ongoing support or targeted therapy.</li>
+  </ul>
+  <p class="muted">
+    Because walking probability moves in the <b>opposite direction</b> to WPI,
+    a low WPI produces a high walking probability.
+  </p>
+</section>
+
+<!-- BARRIER BURDEN -->
+<section class="home-section">
+  <h2>Barrier burden</h2>
+  <p>
+    <b>Barrier burden</b> summarises how much the patient's current limitations
+    are expected to impede recovery. It combines pain, mobility, strength, and
+    other factors into a single score from <b>1 to 10</b>.
+  </p>
+  <p>
+    Scores are grouped into <b>four bands</b>, based on how each patient
+    compares to the reference population:
+  </p>
+  <ul class="home-list">
+    <li><b>Lower barrier burden</b> — the patient has fewer obstacles than 75% of the reference group. Recovery is likely to progress smoothly.</li>
+    <li><b>Lower-intermediate barrier burden</b> — some obstacles are present; targeted therapy can help.</li>
+    <li><b>Higher-intermediate barrier burden</b> — a meaningful number of obstacles; a structured rehabilitation plan is recommended.</li>
+    <li><b>Higher barrier burden</b> — the patient faces the most obstacles. Intensive support may be needed.</li>
+  </ul>
+  <p class="muted">
+    <b>Lower barrier burden is better.</b> The four bands are derived from
+    population quartiles, so a patient's band reflects how they compare to
+    others — not just an absolute score.
+  </p>
+</section>
+
+<!-- CTA -->
+<section class="home-cta">
+  <div>
+    <h2>Ready to look at a patient?</h2>
+    <p>Open the patient list to view predictions, timelines, and explanations.</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('patients') }}">Open patients</a>
+</section>
+
+{% endblock %}

@@ -120,6 +120,193 @@ h4 {
   display: none !important;
 }
 
+/* =========================================================
+   HOME PAGE
+   ========================================================= */
+
+.home-hero {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 26px;
+  align-items: center;
+  padding: 34px 30px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+  margin-bottom: 34px;
+}
+
+.home-hero-text .eyebrow {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin: 0 0 10px;
+}
+
+.home-hero-text h1 {
+  font-size: 36px;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  margin: 0 0 12px;
+}
+
+.home-hero-text .lede {
+  font-size: 15.5px;
+  color: var(--text-secondary);
+  margin: 0 0 20px;
+  max-width: 52ch;
+}
+
+.home-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.home-hero-card {
+  display: grid;
+  gap: 12px;
+}
+
+.home-metric {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 16px 18px;
+  background: #ffffff;
+}
+
+.home-metric .lbl {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.home-metric .v {
+  font-family: var(--sans);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -.02em;
+  color: var(--pink);
+}
+
+.home-metric .sub {
+  margin-top: 8px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+/* Pipeline figure */
+.home-figure {
+  margin: 18px 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 22px 18px;
+  text-align: center;
+}
+
+.home-figure img {
+  display: block;
+  margin: 0 auto 12px;
+  width: 100%;
+  max-width: 620px;      /* caps the width so it doesn't sprawl */
+  height: auto;
+}
+
+.home-figure figcaption {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  max-width: 60ch;
+  margin: 0 auto;
+}
+
+.home-section {
+  margin: 34px 0;
+  max-width: 780px;
+}
+
+.home-section h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.home-section p {
+  margin: 0 0 12px;
+  color: var(--text-secondary);
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+
+.home-section p.muted {
+  color: var(--text-muted);
+  font-size: 13.5px;
+}
+
+.home-list {
+  margin: 8px 0 14px;
+  padding-left: 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.home-list li { margin-bottom: 6px; }
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.home-term {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 14px 16px;
+  background: #ffffff;
+}
+
+.home-term h3 {
+  font-size: 15px;
+  margin-bottom: 6px;
+  color: var(--blue);
+}
+
+.home-term p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.home-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 40px 0 10px;
+  padding: 22px 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #f5f8fd; /* soft blue tint */
+}
+
+.home-cta h2 {
+  font-size: 19px;
+  margin-bottom: 4px;
+}
+
+.home-cta p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
 
 /* =========================================================
    WORDMARK
@@ -2013,6 +2200,23 @@ h4 {
 
   .emet {
     gap: 15px;
+  }
+}
+
+@media (max-width: 780px) {
+  .home-hero {
+    grid-template-columns: 1fr;
+    padding: 26px 20px;
+  }
+  .home-hero-text h1 { font-size: 29px; }
+}
+
+@media (max-width: 640px) {
+  .home-figure {
+    padding: 16px 12px;
+  }
+  .home-figure img {
+    max-width: 100%;
   }
 }
 

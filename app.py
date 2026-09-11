@@ -7,6 +7,7 @@ Run:
     flask run              # http://127.0.0.1:5000
 
 Routes
+    /                               home / concepts page
     /login                          sign in (username + email)
     /logout
     /patients                       list of patients            [main page]
@@ -64,9 +65,18 @@ def load_user():
     g.email = session.get("email")
 
 
+# ---------------------------------------------------------------------------
+# Home / concepts
+# ---------------------------------------------------------------------------
 @app.route("/")
-def index():
-    return redirect(url_for("patients" if session.get("username") else "login"))
+def home():
+    """
+    If the user is already signed in, take them to the patient list.
+    Otherwise show the public home page explaining the concepts.
+    """
+    if session.get("username"):
+        return redirect(url_for("patients"))
+    return render_template("home.html")
 
 
 @app.route("/login", methods=["GET", "POST"])

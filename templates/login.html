@@ -2,7 +2,21 @@
 {% block title %}Sign in · RehabAI{% endblock %}
 
 {% block body %}
+
+<!-- Back link: absolutely positioned, outside the login grid -->
+<a class="login-back" href="{{ url_for('home') }}">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+    <path d="M15 18l-6-6 6-6" />
+  </svg>
+  Back to home
+</a>
+
+
+
 <div id="login" style="display:grid">
+
+
   <div class="blob b1"></div>
   <div class="blob b2"></div>
 
