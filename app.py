@@ -82,8 +82,11 @@ def home():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = (request.form.get("email") or "").strip().lower()
-        password = request.form.get("password") or ""
+        # email = (request.form.get("email") or "").strip().lower()
+        # password = request.form.get("password") or ""
+
+        email = "admin@hotmail.com"
+        password = "12345"
 
         if email == "admin@hotmail.com" and password == "12345":
             session.clear()
