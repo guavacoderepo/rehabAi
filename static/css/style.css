@@ -308,6 +308,49 @@ h4 {
 }
 
 
+.home-deck {
+  margin-top: 2.5rem;
+}
+
+.home-deck-title {
+  margin-bottom: 0.25rem;
+}
+
+.home-deck-caption {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #555;
+  max-width: 60ch;
+}
+
+.home-deck-viewer {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  background: #000;
+}
+
+.home-deck-viewer iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+}
+
+/* Covers Google's bottom control bar so the viewer looks native */
+.home-deck-viewer::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 36px;
+  background: #fff;
+  pointer-events: none;
+}
+
+
 /* =========================================================
    WORDMARK
    ========================================================= */
